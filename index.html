@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI修理職人 - 空き家DIYアシスト</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="glass-pan">
+            <div class="logo">
+                <i data-lucide="hammer"></i>
+                <h1><span class="gradient-text">AI</span>修理プラットフォーム</h1>
+            </div>
+        </header>
+
+        <main>
+            <!-- ============================
+                 SCREEN 1: UPLOAD & DIAGNOSE
+                 ============================ -->
+            <section id="uploadScreen" class="screen active">
+                <div class="hero">
+                    <h2>写真１枚で、ご自宅や空き家の未来が変わる。</h2>
+                    <p>急な壁の穴から退去時の修繕までAIが瞬時に診断。最適なDIY手順と材料の調達をスマートにナビゲートします。</p>
+                </div>
+
+                <div class="upload-section glass-pan" id="dropZone">
+                    <input type="file" id="fileInput" accept="image/*" hidden />
+                    <div class="upload-content">
+                        <i data-lucide="camera" class="upload-icon"></i>
+                        <h3>写真を撮影・アップロード</h3>
+                        <p>キズや穴の写真を送信してください</p>
+                    </div>
+                    <img id="imagePreview" class="hidden" alt="Preview" />
+                    <button id="analyzeBtn" class="primary-btn hidden">AIで診断を開始する</button>
+                    <div id="loadingIndicator" class="loading-state hidden">
+                        <i data-lucide="loader-2" class="spinner"></i>
+                        <p>AIが損傷度と費用を計算中です...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================
+                 SCREEN 1.5: AI QUESTIONS
+                 ============================ -->
+            <section id="questionScreen" class="screen hidden">
+                <div class="glass-pan p-2rem" style="text-align: left;">
+                    <div style="display:flex; align-items:center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <i data-lucide="help-circle" style="color: #3b82f6;"></i>
+                        <h2>AIからの追加質問</h2>
+                    </div>
+                    <p style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem;">
+                        より正確な見積もりのため、以下の質問にお答えください。<br>
+                        <span style="display: inline-block; margin-top: 0.5rem; font-weight: 700; font-size: 1.1rem; color: #ef4444; background: #fee2e2; padding: 0.2rem 0.5rem; border-radius: 4px;">※写真から読み取れない部分の確認です。「わからない」でも構いません</span>
+                    </p>
+                    <ul id="aiQuestionList" style="margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-color); font-weight: 500;">
+                        <!-- Injected by JS -->
+                    </ul>
+                    <textarea id="userAnswerInput" rows="4" style="width: 100%; box-sizing: border-box; border-radius: 8px; padding: 1rem; border: 1px solid #cbd5e1; font-family: inherit; margin-bottom: 1.5rem; resize: vertical;" placeholder="例：キズの大きさは手のひらサイズで、下地の木材は見えていません。わからない質問はそのままで大丈夫です。"></textarea>
+                    
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button id="submitAnswerBtn" class="primary-btn" style="flex: 1; min-width: 200px;">回答して見積もりへ進む</button>
+                        <button id="skipAnswerBtn" style="flex: 1; min-width: 200px; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569;">わからない（スキップ）</button>
+                    </div>
+                    
+                    <div id="loadingIndicator2" class="loading-state hidden" style="margin-top: 1.5rem;">
+                        <i data-lucide="loader-2" class="spinner"></i>
+                        <p>最終見積もりを計算中です...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================
+                 SCREEN 2: CHOICE (DIY vs PRO)
+                 ============================ -->
+            <section id="choiceScreen" class="screen hidden">
+                <div class="diagnosis-summary glass-pan">
+                    <div class="summary-header">
+                        <div class="summary-title">
+                            <i data-lucide="check-circle" style="color:var(--success);"></i>
+                            <h3>診断結果レポート</h3>
+                        </div>
+                        <span id="sumSeverity" class="severity label">判定中</span>
+                    </div>
+                    <h2 id="sumType" style="margin-bottom: 1rem;">---</h2>
+                    <div id="sumDesc" class="text-muted" style="white-space: pre-wrap; line-height: 1.7; margin-bottom: 1.5rem;">---</div>
+                    <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1.25rem; border-radius: 8px;">
+                        <h4 style="font-size: 0.95rem; color: #1e3a8a; margin-bottom: 0.5rem; display: flex; align-items: center;"><i data-lucide="calculator" style="width:16px; height:16px; margin-right: 6px;"></i>見積もり算出の根拠</h4>
+                        <p id="sumLogic" style="font-size: 0.95rem; color: #334155; white-space: pre-wrap; line-height: 1.6; margin: 0;">---</p>
+                    </div>
+                </div>
+
+                <h3 class="choice-heading" style="margin-top: 2.5rem;">AIの提案: ご自身で安く直してみませんか？</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 600px; margin: 0 auto;">
+                    <!-- DIY Choice (Main) -->
+                    <button id="btnGoDiy" class="choice-card diy-theme" style="width: 100%; border: 2px solid #3b82f6; transform: none; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); cursor: pointer; text-align: left; padding: 2rem; position: relative;">
+                        <div class="card-icon" style="background: #3b82f6; color: white;"><i data-lucide="wrench"></i></div>
+                        <h2 style="font-size: 1.5rem; color: #1e3a8a;">自分で直す (DIYプラン)</h2>
+                        <div class="cost-tag" style="background:#e0e7ff; color:#4338ca; font-size: 1.1rem; padding: 0.5rem 1rem;">
+                            材料代のみ: <strong id="sumDiyCost" style="font-size: 1.3rem;">¥---</strong>
+                        </div>
+                        <p style="font-size: 1.05rem; line-height: 1.6; padding-right: 3rem;">AIが「必要な資材リスト」と「詳しい修理ステップ」を完全ナビゲートします。Amazonで材料を安く揃えてご自身のペースで直せる、最もリーズナブルなプランです。</p>
+                        <span class="card-arrow" style="background: #3b82f6; color: white;"><i data-lucide="arrow-right"></i></span>
+                    </button>
+
+                    <!-- PRO Choice (Secondary) -->
+                    <div style="text-align: center; margin-top: 0.5rem; padding-top: 1.5rem; border-top: 1px dashed #cbd5e1;">
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">※自分で直すのが難しそうな場合はプロに依頼することも可能です</p>
+                        <button id="btnGoPro" style="background: transparent; border: none; color: #64748b; text-decoration: underline; cursor: pointer; font-size: 1.05rem; font-family: inherit; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='#64748b'">
+                            地元のプロ（職人）を探す（相場: <span id="sumProCost">¥---</span>） ※準備中
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================
+                 SCREEN 3: DIY PLAN (Affiliate)
+                 ============================ -->
+            <section id="diyScreen" class="screen hidden">
+                <button class="back-btn"><i data-lucide="arrow-left"></i> 戻る</button>
+                <div class="screen-header">
+                    <h2>🛒 DIY修理プラン</h2>
+                    <p>この修理に必要な道具と資材をまとめました。以下のリンクから直接購入できます。</p>
+                </div>
+
+                <div class="glass-pan p-2rem">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                        <h3>必要な資材・ツールリスト</h3>
+                        <div class="total-cost">想定合計: <span id="diyTotalCost"></span></div>
+                    </div>
+                    <ul id="resMaterials" class="material-list">
+                        <!-- Injected by JS -->
+                    </ul>
+
+                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; text-align: center;">
+                        <button class="primary-btn" style="width: 100%; font-size: 1.1rem; padding: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onclick="alert('【デモ用機能】\n現在はプロトタイプテスト版のため、実際の購入は上の個別リンクから行ってください。\n\n※本リリース時にはAmazon商品APIと裏側で連携し、このボタンを1回クリックするだけで、必要な材料すべてがあなたのAmazonカートへ一括追加されるようになります。')">
+                            <i data-lucide="shopping-cart" style="width: 20px; height: 20px;"></i> 必要な材料を一括でカートに入れる（デモ）
+                        </button>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.75rem;">※本機能は開発中のモックアップです。購入は各リンクから行ってください。</p>
+                    </div>
+                </div>
+                
+                <!-- NEW STEPS CONTAINER -->
+                <div class="glass-pan p-2rem" style="margin-top: 1.5rem;">
+                    <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: #1e3a8a;"><i data-lucide="list-ordered" style="color: #3b82f6;"></i> AIが提案する修理ステップ</h3>
+                    <div id="diyStepsContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <p style="color: #94a3b8; text-align: center;">診断結果を読み込み中...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================
+                 SCREEN 4: PRO PLATFORM
+                 ============================ -->
+            <section id="proScreen" class="screen hidden">
+                <button class="back-btn"><i data-lucide="arrow-left"></i> 戻る</button>
+                <div class="screen-header">
+                    <h2>👷‍♂️ 地域の職人プラットフォーム</h2>
+                    <p>AIが分析したデータをもとに、このトラブルに対応可能な地元のプロを表示しています。</p>
+                </div>
+
+                <div class="artisan-list">
+                    <!-- Artisan 1 -->
+                    <div class="artisan-card glass-pan">
+                        <div class="artisan-info">
+                            <img src="https://ui-avatars.com/api/?name=Takumi&background=Random&size=128" alt="職人" class="avatar">
+                            <div>
+                                <div class="artisan-name">匠内装 株式会社 <i data-lucide="shield-check" class="verified"></i></div>
+                                <div class="rating">
+                                    <i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i><i data-lucide="star-half" class="star"></i> 4.8 (124件)
+                                </div>
+                                <p class="text-muted">「壁紙・ボード補修の専門家。スピーディな対応が強みです！」</p>
+                            </div>
+                        </div>
+                        <div class="artisan-action">
+                            <div class="estimated-time">最短対応: 明日午後</div>
+                            <button class="primary-btn sm-btn">チャット・無料見積もり</button>
+                        </div>
+                    </div>
+
+                    <!-- Artisan 2 -->
+                    <div class="artisan-card glass-pan">
+                        <div class="artisan-info">
+                            <img src="https://ui-avatars.com/api/?name=Kenji&background=Random&size=128" alt="職人" class="avatar">
+                            <div>
+                                <div class="artisan-name">ケンジ工務店</div>
+                                <div class="rating">
+                                    <i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i><i data-lucide="star" class="star"></i> 5.0 (38件)
+                                </div>
+                                <p class="text-muted">「大工歴20年。どんな穴やキズも元通りにします。」</p>
+                            </div>
+                        </div>
+                        <div class="artisan-action">
+                            <div class="estimated-time">最短対応: 3日後</div>
+                            <button class="primary-btn sm-btn">チャット・無料見積もり</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
