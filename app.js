@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Amazon Affiliate ID (アソシエイトのトラッキングID)
+    const AMAZON_AFFILIATE_TAG = 'kokofujifuji-22';
+
     // Nav logic
     const screens = {
         upload: document.getElementById('uploadScreen'),
@@ -288,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div style="color: #64748b;">想定価格: 約 ¥${price}</div>
                     </div>
-                    <a href="https://www.amazon.co.jp/s?k=${encodeURIComponent(mat.search_term)}" target="_blank" class="material-link">
+                    <a href="https://www.amazon.co.jp/s?k=${encodeURIComponent(mat.search_term)}&tag=${AMAZON_AFFILIATE_TAG}" target="_blank" class="material-link">
                         Amazonで購入 <i data-lucide="external-link" style="width:16px; height:16px;"></i>
                     </a>
                 `;
