@@ -16,27 +16,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // APIキーを使って利用可能な最新のフラッシュモデルを動的に取得する
-    let targetModel = 'gemini-1.5-flash';
-    try {
-        const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        if (modelsRes.ok) {
-            const md = await modelsRes.json();
-            const generateModels = md.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
-            const preferred = 
-                generateModels.find(m => m.name.includes("2.5-flash")) ||
-                generateModels.find(m => m.name.includes("2.0-flash")) ||
-                generateModels.find(m => m.name.includes("1.5-flash")) ||
-                generateModels.find(m => m.name.includes("flash")) ||
-                generateModels[0];
-            if (preferred) {
-                targetModel = preferred.name.split('models/')[1];
-            }
-        }
-    } catch (e) {
-        console.warn("Model fetch failed, falling back to default", e);
-    }
-    console.log("Selected model:", targetModel);
+    // 安定版のフラッシュモデルを指定（動的取得は安定しないため固定）
+    const targetModel = 'gemini-1.5-flash';
 
     
     const reqBody = {
