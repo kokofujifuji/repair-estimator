@@ -23,11 +23,11 @@ export default async function handler(req, res) {
         if (modelsRes.ok) {
             const md = await modelsRes.json();
             const generateModels = md.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
-            // 優先順位: 1.5-flash -> 1.5-pro -> pro-vision -> 最初の利用可能なモデル
+            // 優先順位: 2.5-flash -> 1.5-flash -> flash -> 最初の利用可能なモデル
             const preferred = 
+                generateModels.find(m => m.name.includes("2.5-flash")) ||
                 generateModels.find(m => m.name.includes("1.5-flash")) ||
-                generateModels.find(m => m.name.includes("1.5-pro")) ||
-                generateModels.find(m => m.name.includes("pro-vision")) ||
+                generateModels.find(m => m.name.includes("flash")) ||
                 generateModels[0];
             if (preferred) {
                 targetModel = preferred.name.split('models/')[1];
