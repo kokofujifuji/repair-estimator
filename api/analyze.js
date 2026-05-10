@@ -10,14 +10,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields (promptText, mimeType, base64Data)' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
       console.error('GEMINI_API_KEY is not set in environment variables.');
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // デフォルトのモデルを使用
-    const targetModel = 'gemini-1.5-flash';
+    // 最新のフラッシュモデルを指定
+    const targetModel = 'gemini-1.5-flash-latest';
     
     const reqBody = {
       contents: [{
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errText = await response.text();
       console.error('Gemini API Error:', errText);
-      throw new Error(`Gemini API Error (${response.status})`);
+      throw new Error(`Gemini API Error (${response.status}): ${errText}`);
     }
 
     const data = await response.json();
