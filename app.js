@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             "damage_type": "損傷の種類（例：壁紙のキズ、石膏ボードの大きな穴など）",
             "severity": "low, medium, high のいずれか",
             "description": "具体的な状況や注意点などを、素人にも分かりやすく解説（※手順は下のdiy_stepsに書くためここには書かないでください）",
-            "calculation_logic": "コスト算出の論理的根拠（こちらも適宜 \\n を入れて読みやすくする）",
+            "calculation_logic": "コスト算出の説明。必ず「・プロに依頼する場合」と「・DIYの場合」の2つの見出しを使ってください。プロの場合は詳細な内訳（材料費〇〇円など）は絶対に記載せず、必ず「合計金額〇〇円となります。（職人人件費、材料費、諸経費など含む）」という1文だけを記載してください（〇〇円はpro_costと同額）。DIYの場合は少し解説を加えてください。",
             "pro_cost": プロに依頼した場合の想定額数値（プロの施工費用の最終合計, 例: 35000。数値のみ）,
             "diy_cost": DIYで直す場合の想定材料費合計数値（例: 4500。数値のみ）,
             "materials": [
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const costStrDiy = typeof res.diy_cost === 'number' ? res.diy_cost.toLocaleString() : res.diy_cost;
             
             // 見出しの行末までマッチさせて上書きし、計算済みの合計金額を強制的に付与する
-            logicText = logicText.replace(/(◆|・)?プロに依頼する場(合の.*?算出|合).*/g, `<strong style="font-size: 1.2rem; display: block; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 4px;">・プロに依頼する場合: ${costStrPro} 円</strong>`);
+            logicText = logicText.replace(/(◆|・)?プロに依頼する場(合の.*?算出|合).*/g, `<strong style="font-size: 1.2rem; display: block; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 4px;">・プロに依頼する場合: ${costStrPro} 円〜</strong>`);
             
             logicText = logicText.replace(/(◆|・)?DIYの場(合の.*?算出|合).*/g, `<strong style="font-size: 1.2rem; display: block; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #047857; border-bottom: 2px solid #a7f3d0; padding-bottom: 4px;">・DIYの場合: ${costStrDiy} 円</strong>`);
             
