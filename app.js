@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnDiyToTop').addEventListener('click', () => location.reload());
     document.getElementById('btnDiyFinish').addEventListener('click', () => location.reload());
 
+    // Choice Screen Actions
+    document.getElementById('btnChoiceToTop').addEventListener('click', () => location.reload());
+    document.getElementById('btnChoiceFinish').addEventListener('click', () => location.reload());
+
     let currentFile = null;
 
     // --- UPLOAD LOGIC ---
