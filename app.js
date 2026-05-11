@@ -41,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnGoDiy').addEventListener('click', () => navigateTo('diy'));
     document.getElementById('btnGoPro').addEventListener('click', () => navigateTo('pro'));
 
+    // DIY Screen Actions
+    document.getElementById('btnDiyToTop').addEventListener('click', () => location.reload());
+    document.getElementById('btnDiyFinish').addEventListener('click', () => location.reload());
+
     let currentFile = null;
 
     // --- UPLOAD LOGIC ---
